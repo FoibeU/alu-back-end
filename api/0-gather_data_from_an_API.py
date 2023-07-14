@@ -1,9 +1,5 @@
 #!/usr/bin/python3
-
-"""
-Python script to retrieve and display an employee's TODO list progress.
-"""
-
+"""Exports to-do list information of all employees to JSON format."""
 import requests
 import sys
 
