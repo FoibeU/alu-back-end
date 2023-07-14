@@ -1,41 +1,27 @@
 #!/usr/bin/python3
-"""Exports to-do list information of all employees to JSON format."""
+'''
+Python script that returns information using REST API
+'''
 import requests
-import sys
+from sys import argv
 
-EMPLOYEE_ID = int(sys.argv[1])
-
-# API endpoint
-url = 'https://jsonplaceholder.typicode.com/users/{id}'.format(id=EMPLOYEE_ID)
-
-# Retrieve employee information
-response = requests.get(url)
-employee_data = response.json()
-
-# Get employee name
-employee_name = employee_data['name']
-
-# API endpoint for employee's TODO list
-todos_url = 'https://jsonplaceholder.typicode.com/todos?userId={id}'.format(id=EMPLOYEE_ID)
-
-# Retrieve employee's TODO list
-todos_response = requests.get(todos_url)
-todos_data = todos_response.json()
-
-# Count the number of completed tasks
-completed_tasks = [todo for todo in todos_data if todo['completed']]
-number_of_done_tasks = len(completed_tasks)
-
-# Count the total number of tasks
-total_number_of_tasks = len(todos_data)
-
-# Display employee's TODO list progress
-print("Employee {name} is done with tasks ({done}/{total}):".format(
-    name=employee_name,
-    done=number_of_done_tasks,
-    total=total_number_of_tasks
-))
-
-# Display the title of completed tasks
-for task in completed_tasks:
-    print("\t", task['title'])
+if __name__ == "__main__":
+    if len(argv) > 1:
+        user = argv[1]
+        url = "https://jsonplaceholder.typicode.com/"
+        req = requests.get("{}users/{}".format(url, user))
+        name = req.json().get("name")
+        if name is not None:
+            jreq = requests.get(
+                "{}todos?userId={}".format(
+                    url, user)).json()
+            alltsk = len(jreq)
+            completedtsk = []
+            for t in jreq:
+                if t.get("completed") is True:
+                    completedtsk.append(t)
+            count = len(completedtsk)
+            print("Employee {} is done with tasks({}/{}):"
+                  .format(name, count, alltsk))
+            for title in completedtsk:
+                print("\t {}".format(title.get("title")))
